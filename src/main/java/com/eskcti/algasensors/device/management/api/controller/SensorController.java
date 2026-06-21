@@ -1,11 +1,14 @@
 package com.eskcti.algasensors.device.management.api.controller;
 
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.eskcti.algasensors.device.management.api.model.SensorInput;
 import com.eskcti.algasensors.device.management.api.model.SensorOutput;
@@ -14,6 +17,7 @@ import com.eskcti.algasensors.device.management.domain.model.Sensor;
 import com.eskcti.algasensors.device.management.domain.model.SensorId;
 import com.eskcti.algasensors.device.management.domain.repository.SensorRepository;
 
+import io.hypersistence.tsid.TSID;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -22,6 +26,14 @@ import lombok.RequiredArgsConstructor;
 public class SensorController {
 
     private final SensorRepository sensorRepository;
+
+    @GetMapping("/{sensorId}")
+    public SensorOutput getById(@PathVariable("sensorId") TSID sensorId) {
+        Sensor sensor = sensorRepository.findById(new SensorId(sensorId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sensor not found"));
+
+        return convertToModel(sensor);
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -37,6 +49,10 @@ public class SensorController {
             .build();
 
         sensor = sensorRepository.saveAndFlush(sensor);
+        return convertToModel(sensor);
+    }
+
+    private SensorOutput convertToModel(Sensor sensor) {
         return SensorOutput.builder()
             .id(sensor.getId().getValue())
             .name(sensor.getName())
