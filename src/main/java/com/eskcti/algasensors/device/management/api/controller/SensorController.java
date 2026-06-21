@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -26,6 +28,12 @@ import lombok.RequiredArgsConstructor;
 public class SensorController {
 
     private final SensorRepository sensorRepository;
+
+    @GetMapping
+    public Page<SensorOutput> getAll(Pageable pageable) {
+        Page<Sensor> sensors = sensorRepository.findAll(pageable);
+        return sensors.map(this::convertToModel);
+    }
 
     @GetMapping("/{sensorId}")
     public SensorOutput getById(@PathVariable("sensorId") TSID sensorId) {
