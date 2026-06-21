@@ -15,4 +15,6 @@ public interface SensorRepository extends Repository<Sensor, SensorId> {
     Optional<Sensor> findById(SensorId sensorId);
 
     Page<Sensor> findAll(Pageable pageable);
+
+    void deleteById(SensorId sensorId);
 }

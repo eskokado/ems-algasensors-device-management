@@ -3,6 +3,8 @@ package com.eskcti.algasensors.device.management.api.controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -58,6 +60,31 @@ public class SensorController {
 
         sensor = sensorRepository.saveAndFlush(sensor);
         return convertToModel(sensor);
+    }
+
+    @PutMapping("/{sensorId}")
+    @ResponseStatus(HttpStatus.OK)
+    public SensorOutput update(@PathVariable("sensorId") TSID sensorId, @RequestBody SensorInput input) {
+        Sensor sensor = sensorRepository.findById(new SensorId(sensorId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sensor not found"));
+
+        sensor.setName(input.getName());
+        sensor.setIp(input.getIp());
+        sensor.setLocation(input.getLocation());
+        sensor.setProtocol(input.getProtocol());
+        sensor.setModel(input.getModel());
+
+        sensor = sensorRepository.saveAndFlush(sensor);
+        return convertToModel(sensor);
+    }
+
+    @DeleteMapping("/{sensorId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable("sensorId") TSID sensorId) {
+        sensorRepository.findById(new SensorId(sensorId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sensor not found"));
+
+        sensorRepository.deleteById(new SensorId(sensorId));
     }
 
     private SensorOutput convertToModel(Sensor sensor) {
