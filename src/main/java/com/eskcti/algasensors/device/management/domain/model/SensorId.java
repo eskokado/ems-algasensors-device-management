@@ -5,12 +5,14 @@ import java.util.Objects;
 
 import io.hypersistence.tsid.TSID;
 import jakarta.persistence.Embeddable;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Embeddable
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
+@EqualsAndHashCode
 public class SensorId implements Serializable {
     private TSID value;
 

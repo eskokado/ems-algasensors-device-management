@@ -2,14 +2,14 @@ package com.eskcti.algasensors.device.management.domain.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
 import com.eskcti.algasensors.device.management.domain.model.Sensor;
 import com.eskcti.algasensors.device.management.domain.model.SensorId;
 
-public interface SensorRepository extends Repository<Sensor, SensorId> {
+public interface SensorRepository extends JpaRepository<Sensor, SensorId> {
     Sensor saveAndFlush(Sensor sensor);
 
     Optional<Sensor> findById(SensorId sensorId);
