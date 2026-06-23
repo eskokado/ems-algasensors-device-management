@@ -15,7 +15,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.eskcti.algasensors.device.management.api.client.SensorMonitoringClient;
+import com.eskcti.algasensors.device.management.api.model.SensorDetailOutput;
 import com.eskcti.algasensors.device.management.api.model.SensorInput;
+import com.eskcti.algasensors.device.management.api.model.SensorMonitoringOutput;
 import com.eskcti.algasensors.device.management.api.model.SensorOutput;
 import com.eskcti.algasensors.device.management.common.IdGenerator;
 import com.eskcti.algasensors.device.management.domain.model.Sensor;
@@ -45,6 +47,20 @@ public class SensorController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sensor not found"));
 
         return convertToModel(sensor);
+    }
+
+    @GetMapping("/{sensorId}/detail")
+    public SensorDetailOutput getByIdWithDetail(@PathVariable("sensorId") TSID sensorId) {
+        Sensor sensor = sensorRepository.findById(new SensorId(sensorId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sensor not found"));
+        
+        SensorMonitoringOutput monitoringOutput = sensorMonitoringClient.getDetail(sensorId);
+        SensorOutput sensorOutput = convertToModel(sensor);
+
+        return SensorDetailOutput.builder()
+            .sensor(sensorOutput)
+            .monitoring(monitoringOutput)
+            .build();
     }
 
     @PostMapping
