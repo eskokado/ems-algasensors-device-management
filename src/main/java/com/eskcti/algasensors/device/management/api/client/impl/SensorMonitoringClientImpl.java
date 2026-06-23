@@ -1,6 +1,5 @@
 package com.eskcti.algasensors.device.management.api.client.impl;
 
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 import com.eskcti.algasensors.device.management.api.client.RestClientFactory;
@@ -9,7 +8,7 @@ import com.eskcti.algasensors.device.management.api.model.SensorMonitoringOutput
 
 import io.hypersistence.tsid.TSID;
 
-@Component
+// @Component
 public class SensorMonitoringClientImpl implements SensorMonitoringClient {
     private final RestClient restClient;
 
