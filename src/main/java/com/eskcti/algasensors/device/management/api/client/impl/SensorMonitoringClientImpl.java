@@ -1,15 +1,10 @@
 package com.eskcti.algasensors.device.management.api.client.impl;
 
-import java.time.Duration;
-
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
+import com.eskcti.algasensors.device.management.api.client.RestClientFactory;
 import com.eskcti.algasensors.device.management.api.client.SensorMonitoringClient;
-import com.eskcti.algasensors.device.management.api.client.SensorMonitoringClientBadGatewayException;
 
 import io.hypersistence.tsid.TSID;
 
@@ -17,22 +12,10 @@ import io.hypersistence.tsid.TSID;
 public class SensorMonitoringClientImpl implements SensorMonitoringClient {
     private final RestClient restClient;
 
-    public SensorMonitoringClientImpl(RestClient.Builder builder) {
-        this.restClient = builder
-            .baseUrl("http://localhost:8082")
-            .requestFactory(generateClienteHttpRequestFactory())
-            .defaultStatusHandler(HttpStatusCode::isError, (request, response) -> {
-                throw new SensorMonitoringClientBadGatewayException("Failed to communicate with the Sensor Monitoring service");
-            })
-            .build();
+    public SensorMonitoringClientImpl(RestClientFactory factory) {
+        this.restClient = factory.temperatureMonitoringRestClient();
     }
 
-    private ClientHttpRequestFactory generateClienteHttpRequestFactory() {
-        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout(Duration.ofSeconds(3));
-        factory.setReadTimeout(Duration.ofSeconds(5));
-        return factory;
-    }
 
     @Override
     public void enableMonitoring(TSID sensorId) {
