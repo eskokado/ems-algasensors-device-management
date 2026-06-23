@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.eskcti.algasensors.device.management.api.client.SensorMonitoringClient;
 import com.eskcti.algasensors.device.management.api.model.SensorInput;
 import com.eskcti.algasensors.device.management.api.model.SensorOutput;
 import com.eskcti.algasensors.device.management.common.IdGenerator;
@@ -30,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 public class SensorController {
 
     private final SensorRepository sensorRepository;
+    private final SensorMonitoringClient sensorMonitoringClient;
 
     @GetMapping
     public Page<SensorOutput> getAll(Pageable pageable) {
@@ -85,6 +87,7 @@ public class SensorController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sensor not found"));
 
         sensorRepository.deleteById(new SensorId(sensorId));
+        sensorMonitoringClient.disableMonitoring(sensorId);
     }
 
     @PutMapping("/{sensorId}/enable")
@@ -95,6 +98,7 @@ public class SensorController {
 
         sensor.setEnabled(true);
         sensorRepository.saveAndFlush(sensor);
+        sensorMonitoringClient.enableMonitoring(sensorId);
     }
 
     @DeleteMapping("/{sensorId}/enable")
@@ -105,6 +109,7 @@ public class SensorController {
 
         sensor.setEnabled(false);
         sensorRepository.saveAndFlush(sensor);
+        sensorMonitoringClient.disableMonitoring(sensorId);
     }
 
     private SensorOutput convertToModel(Sensor sensor) {
